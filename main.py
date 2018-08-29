@@ -36,7 +36,7 @@ def load_vgg(sess, vgg_path):
     layer7 = graph.get_tensor_by_name('layer7_out:0')
     
     return image_input, keep_prob, layer3, layer4, layer7
-    
+
 tests.test_load_vgg(load_vgg, tf)
 
 
@@ -50,7 +50,31 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     :return: The Tensor for the last layer of output
     """
     # TODO: Implement function
-    return None
+    layer7_1x1 = tf.layers.conv2d(vgg_layer7_out, num_classes, kernel_size=1, name='vgg_layer7_1x1')
+    layer4_1x1 = tf.layers.conv2d(vgg_layer4_out, num_classes, kernel_size=1, name='vgg_layer4_1x1')
+    layer3_1x1 = tf.layers.conv2d(vgg_layer3_out, num_classes, kernel_size=1, name='vgg_layer3_1x1')
+
+    fcn_decoder_layer1 = tf.layers.conv2d_transpose(layer7_1x1, 
+                                                    num_classes, 
+                                                    kernel_size=4, 
+                                                    strides=(2, 2),
+                                                    padding='same', 
+                                                    name='fcn_decoder_layer1')
+                                                
+    fcn_decoder_layer2 = tf.add(fcn_decoder_layer1, layer4_1x1, name='fcn_decoder_layer2')
+
+    fcn_decoder_layer3 = tf.layers.conv2d_transpose(fcn_decoder_layer2, 
+                                                    num_classes, 
+                                                    kernel_size=4, strides=(2, 2),
+                                                    padding='same', name='fcn_decoder_layer3')
+
+    fcn_decoder_layer4 = tf.add(fcn_decoder_layer3, layer3_1x1, name='fcn_decoder_layer4')
+
+    fcn_decoder_layer5 = tf.layers.conv2d_transpose(fcn_decoder_layer4, 
+                                                    num_classes, 
+                                                    kernel_size=16, strides=(8, 8),
+                                                    padding='same', name='fcn_decoder_layer5')
+    return fcn_decoder_layer5
 tests.test_layers(layers)
 
 
