@@ -119,8 +119,7 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
                                     learning_rate: 0.001,
                                     keep_prob: 0.5,
                                 })
-        print("Training epoch: " + str(epoch))
-        print("Training loss " + str(loss))
+        print("Epoch: " + str(epoch) + ", loss: " + str(loss))
 
 tests.test_train_nn(train_nn)
 
